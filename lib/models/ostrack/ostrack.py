@@ -136,7 +136,7 @@ def build_ostrack(cfg, training=True):
     elif cfg.MODEL.BACKBONE.TYPE == 'efficientformerv2_s0_16_4':
         backbone = efficientformerv2_s0_16_4()
     elif cfg.MODEL.BACKBONE.TYPE == 'levit_384':
-        backbone = LeViT_384()
+        backbone = LeViT_384(pretrained=True)
     else:
         raise NotImplementedError
 
