@@ -52,7 +52,7 @@ MODEL:
   RETURN_INTER: False
   BACKBONE:
     TYPE: efficientformerv2_s0_16_4
-    STRIDE: 16
+    STRIDE: 4
   HEAD:
     TYPE: CENTER
     NUM_CHANNELS: 256
