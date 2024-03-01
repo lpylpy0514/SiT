@@ -608,7 +608,6 @@ class EfficientFormerV2(nn.Module):
         elif self.fusion == "16->16":
             self.linear = nn.Linear(embed_dims[2], embed_dims[2])
         elif self.fusion == "16->4":
-            self.fpn = nn.Identity()
             self.conv1 = torch.nn.ConvTranspose2d(embed_dims[2], embed_dims[2], kernel_size=2, stride=2)
             self.conv2 = torch.nn.ConvTranspose2d(embed_dims[1] + embed_dims[2], embed_dims[1] + embed_dims[2], kernel_size=2, stride=2)
             self.linear = nn.Linear(sum(embed_dims[:-1]), embed_dims[2])

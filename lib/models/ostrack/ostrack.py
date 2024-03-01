@@ -18,6 +18,7 @@ from lib.utils.box_ops import box_xyxy_to_cxcywh
 from lib.models.ostrack.vit import Fearure_Mixer_base
 from lib.models.ostrack.efficientformer import efficientformerv2_s0, efficientformerv2_s1, efficientformerv2_s2, efficientformerv2_l
 from lib.models.ostrack.efficientformer import efficientformerv2_s0_16_16, efficientformerv2_s0_16_4
+from lib.models.ostrack.levit import LeViT_384
 
 import time
 
@@ -134,6 +135,8 @@ def build_ostrack(cfg, training=True):
         backbone = efficientformerv2_s0_16_16()
     elif cfg.MODEL.BACKBONE.TYPE == 'efficientformerv2_s0_16_4':
         backbone = efficientformerv2_s0_16_4()
+    elif cfg.MODEL.BACKBONE.TYPE == 'levit_384':
+        backbone = LeViT_384()
     else:
         raise NotImplementedError
 

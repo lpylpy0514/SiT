@@ -3,7 +3,7 @@
 
 # about your tracker
 script="ostrack"
-config="s0_s0_resolution_16_4"
+config="levit_384"
 #config="spd_test"
 num_gpus=1
 num_thread=8
