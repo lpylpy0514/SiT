@@ -4,6 +4,7 @@ source /root/anaconda3/bin/activate seqtrackv2
 pip install wandb
 pip install thop
 apt-get install libturbojpeg
+pip install timm==0.9.10
 cd /18353470163/lpy/SiT
 # about your tracker
 script="ostrack"
