@@ -65,7 +65,7 @@ class OSTrack(nn.Module):
         fusion_feature = self.feature_mixer(fusion)
         # time_3 = time.time()
         # Forward head
-        feat_last = fusion_feature[:, -196:, :]
+        feat_last = fusion_feature[:, -self.feat_len_s:, :]
 
         out = self.forward_head(feat_last, None)
         # time_4 = time.time()
