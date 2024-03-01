@@ -1,0 +1,9 @@
+output
+pretrained_models
+tensorboard
+*.pth
+*.onnx
+.idea
+data
+**/__pycache__
+**/local.py

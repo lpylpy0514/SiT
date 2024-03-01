@@ -519,6 +519,7 @@ class EfficientFormerV2(nn.Module):
                  distillation=True,
                  resolution=224,
                  e_ratios=expansion_ratios_L,
+                 fusion=None,
                  **kwargs):
         super().__init__()
 
@@ -598,13 +599,19 @@ class EfficientFormerV2(nn.Module):
         #     'S1': [32, 48, 120, 224],  # 6.1m 79.0
         #     'S0': [32, 48, 96, 176],  # 75.0 75.7
         # }
-        self.conv1 = torch.nn.Conv2d(embed_dims[0], embed_dims[0], 3, 2, 1)
-        self.conv2 = torch.nn.Conv2d(embed_dims[0]+embed_dims[1], embed_dims[0]+embed_dims[1], 3, 2, 1)
-        self.conv3 = torch.nn.ConvTranspose2d(embed_dims[3], embed_dims[3], kernel_size=2, stride=2)
-        self.linear = nn.Linear(sum(embed_dims[:-1]), embed_dims[2])
-        # self.conv1 = torch.nn.Conv2d(32, 32, 3, 2, 1)
-        # self.conv2 = torch.nn.Conv2d(80, 48, 3, 2, 1)
-        # self.conv3 = torch.nn.ConvTranspose2d(176, 48, kernel_size=2, stride=2)
+        self.fusion = fusion
+        if self.fusion == None:
+            self.conv1 = torch.nn.Conv2d(embed_dims[0], embed_dims[0], 3, 2, 1)
+            self.conv2 = torch.nn.Conv2d(embed_dims[0]+embed_dims[1], embed_dims[0]+embed_dims[1], 3, 2, 1)
+            self.conv3 = torch.nn.ConvTranspose2d(embed_dims[3], embed_dims[3], kernel_size=2, stride=2)
+            self.linear = nn.Linear(sum(embed_dims[:-1]), embed_dims[2])
+        elif self.fusion == "16->16":
+            self.linear = nn.Linear(embed_dims[2], embed_dims[2])
+        elif self.fusion == "16->4":
+            self.fpn = nn.Identity()
+            self.conv1 = torch.nn.ConvTranspose2d(embed_dims[2], embed_dims[2], kernel_size=2, stride=2)
+            self.conv2 = torch.nn.ConvTranspose2d(embed_dims[1] + embed_dims[2], embed_dims[1] + embed_dims[2], kernel_size=2, stride=2)
+            self.linear = nn.Linear(sum(embed_dims[:-1]), embed_dims[2])
 
     # init for classification
     def cls_init_weights(self, m):
@@ -658,18 +665,23 @@ class EfficientFormerV2(nn.Module):
         return x
 
     def feature_fusion(self, feature_list):
-        out1 = self.conv1(feature_list[0])
-        out1 = torch.concat((out1, feature_list[1]), dim=1)
-
-        out2 = self.conv2(out1)
-
-        # if len(feature_list)==4:
-        #     out3 = self.conv3(feature_list[3])
-        #     out = torch.concat((feature_list[2], out2, out3), dim=1)
-        # else:
-        out = torch.concat((feature_list[2], out2), dim=1)
-        out = self.linear(out.permute(0,2,3,1))
-        out = out.permute(0,3,1,2)
+        if self.fusion == None:
+            out1 = self.conv1(feature_list[0])
+            out1 = torch.concat((out1, feature_list[1]), dim=1)
+            out2 = self.conv2(out1)
+            out = torch.concat((feature_list[2], out2), dim=1)
+            out = self.linear(out.permute(0,2,3,1))
+            out = out.permute(0,3,1,2)
+        elif self.fusion == "16->16":
+            out = self.linear(feature_list[2].permute(0,2,3,1))
+            out = out.permute(0,3,1,2)
+        elif self.fusion == "16->4":
+            out1 = self.conv1(feature_list[2])
+            out1 = torch.concat((out1, feature_list[1]), dim=1)
+            out2 = self.conv2(out1)
+            out = torch.concat((feature_list[0], out2), dim=1)
+            out = self.linear(out.permute(0,2,3,1))
+            out = out.permute(0,3,1,2)
         return out
 
 
@@ -767,6 +779,34 @@ def efficientformerv2_l(pretrained=False, **kwargs):
         vit_num=6,
         drop_path_rate=0.1,
         e_ratios=expansion_ratios_L,
+        **kwargs)
+    model.default_cfg = _cfg(crop_pct=0.9)
+    return model
+
+@register_model
+def efficientformerv2_s0_16_16(pretrained=False, **kwargs):
+    model = EfficientFormerV2(
+        layers=EfficientFormer_depth['S0'],
+        embed_dims=EfficientFormer_width['S0'],
+        downsamples=[True, True, True, False],
+        vit_num=2,
+        drop_path_rate=0.0,
+        e_ratios=expansion_ratios_S0,
+        fusion="16->16",
+        **kwargs)
+    model.default_cfg = _cfg(crop_pct=0.9)
+    return model
+
+@register_model
+def efficientformerv2_s0_16_4(pretrained=False, **kwargs):
+    model = EfficientFormerV2(
+        layers=EfficientFormer_depth['S0'],
+        embed_dims=EfficientFormer_width['S0'],
+        downsamples=[True, True, True, False],
+        vit_num=2,
+        drop_path_rate=0.0,
+        e_ratios=expansion_ratios_S0,
+        fusion="16->4",
         **kwargs)
     model.default_cfg = _cfg(crop_pct=0.9)
     return model

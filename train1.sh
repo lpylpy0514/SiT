@@ -7,7 +7,7 @@ apt-get install libturbojpeg
 cd /18353470163/lpy/SiT
 # about your tracker
 script="ostrack"
-config="s0_s0_resolution_16_16"
+config="s0_s0_resolution_16_4"
 #config="spd_test"
 num_gpus=1
 num_thread=8
