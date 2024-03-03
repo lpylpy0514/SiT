@@ -22,7 +22,7 @@ def parse_args():
     # for train
     parser.add_argument('--script', type=str, default='ostrack', choices=['ostrack'],
                         help='training script name')
-    parser.add_argument('--config', type=str, default=['s0_s0_resolution_16_4', 's0_s0_resolution', 's1_s1_resolution', 'L_L_resolution',], help='yaml configure file name')
+    parser.add_argument('--config', type=str, default=['s0_s0_resolution_16_16', 's0_s0_resolution_16_4', 's0_s0_resolution', 's1_s1_resolution', 'L_L_resolution','levit_384'], help='yaml configure file name')
     args = parser.parse_args()
 
     return args
@@ -113,7 +113,7 @@ def get_data(bs, sz):
 if __name__ == "__main__":
     device = "cuda:0"
     # device = 'cpu'
-    dims = [192, 240, 384]
+    dims = [192, 192, 192, 240, 384, 768]
     # torch.set_num_threads(1)
     # torch.cuda.set_device(device)
 

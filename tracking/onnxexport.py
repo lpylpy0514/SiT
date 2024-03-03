@@ -50,14 +50,15 @@ def parse_args():
     # for train
     parser.add_argument('--script', type=str, default='ostrack', choices=['ostrack'],
                         help='training script name')
-    parser.add_argument('--config', type=str, default=['s0_s0_resolution', 's1_s1_resolution', 'L_L_resolution',], help='yaml configure file name')
+    parser.add_argument('--config', type=str, default=['s0_s0_resolution_16_16', 's0_s0_resolution_16_4', 's0_s0_resolution', 's1_s1_resolution', 'L_L_resolution','levit_384'], help='yaml configure file name')
+
     parser.add_argument('--device', type=str, default="cuda:0", help='device to inference')
     args = parser.parse_args()
 
     return args
 
 if __name__ == "__main__":
-    dims = [192, 240, 384]
+    dims = [192, 192, 192, 240, 384, 768]
     args = parse_args()
     device = args.device
     for i, config in enumerate(args.config):
@@ -78,10 +79,10 @@ if __name__ == "__main__":
             model_constructor = model_module.build_ostrack
             model = model_constructor(cfg, training=False)
             save_dir = './output'
-            checkpoint_name = os.path.join(save_dir,
-                                        "./checkpoints/train/%s/%s/OSTrack_ep%04d.pth.tar"
-                                        % (args.script, config, cfg.TEST.EPOCH))
-            model.load_state_dict(torch.load(checkpoint_name, map_location='cpu')['net'], strict=True)
+            # checkpoint_name = os.path.join(save_dir,
+            #                             "./checkpoints/train/%s/%s/OSTrack_ep%04d.pth.tar"
+            #                             % (args.script, config, cfg.TEST.EPOCH))
+            # model.load_state_dict(torch.load(checkpoint_name, map_location='cpu')['net'], strict=True)
             model.eval()
 
             # merge conv+bn to one operator

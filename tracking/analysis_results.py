@@ -35,8 +35,12 @@ trackers.extend(trackerlist(name='ostrack', parameter_name='L_L_resolution', dat
                             run_ids=None, display_name='L_L_resolution'))
 trackers.extend(trackerlist(name='ostrack', parameter_name='s0_s0_resolution', dataset_name=dataset_name,
                             run_ids=None, display_name='s0_s0_resolution'))
+trackers.extend(trackerlist(name='ostrack', parameter_name='s0_s0_resolution_16_16', dataset_name=dataset_name,
+                            run_ids=None, display_name='s0_s0_resolution_16_16'))
 trackers.extend(trackerlist(name='ostrack', parameter_name='s1_s1_resolution', dataset_name=dataset_name,
                             run_ids=None, display_name='s1_s1_resolution'))
+trackers.extend(trackerlist(name='ostrack', parameter_name='levit_384', dataset_name=dataset_name,
+                            run_ids=None, display_name='levit_384'))
 # trackers.extend(trackerlist(name='ostrack', parameter_name='nano_corner', dataset_name=dataset_name,
 #                             run_ids=None, display_name='nano_corner'))
 # trackers.extend(trackerlist(name='ostrack', parameter_name='vitb_384_mae_ce_32x4_ep300', dataset_name=dataset_name,
